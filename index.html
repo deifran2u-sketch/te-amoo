@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mi Amor</title>
+    <style>
+        body { background: #fff0f3; margin: 0; overflow: hidden; font-family: sans-serif; }
+        #canvas { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
+        #contenido { position: absolute; width: 100%; text-align: center; top: 20%; z-index: 10; }
+        
+        /* Corazón inicial */
+        #corazon-btn { font-size: 80px; cursor: pointer; animation: latir 1s infinite; }
+        @keyframes latir { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+        /* Caja de info */
+        #info { display: none; background: rgba(255,255,255,0.8); padding: 20px; border-radius: 20px; margin: 0 20px; border: 2px solid #ff4d6d; }
+        #reloj { font-size: 1.5rem; font-weight: bold; color: #ff4d6d; }
+
+        /* Pantalla Final */
+        #final { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ff4d6d; color: white; flex-direction: column; justify-content: center; align-items: center; z-index: 100; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="contenido">
+        <div id="corazon-btn" onclick="empezar()">❤️</div>
+        <div id="info">
+            <h2 id="texto">Llevamos juntos...</h2>
+            <div id="reloj">Cargando...</div>
+        </div>
+    </div>
+
+    <div id="final">
+        <h1 style="font-size: 2.5rem;">¿Quieres ser mi San Valentín?</h1>
+        <button onclick="alert('¡Te amo! ❤️')" style="padding: 15px 30px; border-radius: 30px; border: none; font-size: 1.2rem; cursor: pointer;">¡SÍ, ACEPTO! ❤️</button>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function empezar() {
+            document.getElementById('corazon-btn').style.display = 'none';
+            document.getElementById('info').style.display = 'block';
+            
+            // Iniciar Árbol
+            dibujarRama(canvas.width/2, canvas.height, 70, -Math.PI/2, 8);
+            
+            // Iniciar Reloj
+            setInterval(actualizarReloj, 1000);
+
+            // Secuencia de mensajes
+            setTimeout(() => { document.getElementById('texto').innerText = "Eres lo mejor que me ha pasado..."; }, 4000);
+            
+            // Transición a la pregunta final (a los 10 segundos)
+            setTimeout(() => {
+                document.getElementById('final').style.display = 'flex';
+            }, 10000);
+        }
+
+        function actualizarReloj() {
+            const inicio = new Date(2021, 6, 29); // 29 de Julio 2021
+            const ahora = new Date();
+            const diff = ahora - inicio;
+            const d = Math.floor(diff / (1000*60*60*24));
+            const h = Math.floor((diff / (1000*60*60)) % 24);
+            const m = Math.floor((diff / 1000 / 60) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            document.getElementById('reloj').innerHTML = ${d}d ${h}h ${m}m ${s}s;
+        }
+
+        function dibujarRama(x, y, len, angulo, ancho) {
+            ctx.beginPath();
+            ctx.save();
+            ctx.strokeStyle = "#4b2c20";
+            ctx.lineWidth = ancho;
+            ctx.translate(x, y);
+            ctx.rotate(angulo);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(len, 0);
+            ctx.stroke();
+
+            if (len < 10) {
+                // Dibujar corazones rojos al final de las ramas
+                ctx.fillStyle = "#ff4d6d";
+                ctx.font = "10px Arial";
+                ctx.fillText("❤️", len, 0);
+                ctx.restore();
+                return;
+            }
+
+            setTimeout(() => {
+                dibujarRama(len, 0, len * 0.8, 0.2, ancho * 0.7);
+                dibujarRama(len, 0, len * 0.8, -0.2, ancho * 0.7);
+                ctx.restore();
+            }, 50);
+        }
+    </script>
+</body>
+</html>
